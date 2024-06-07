@@ -12,7 +12,7 @@ class HashMap {
     let hashCode = 0;
 
     const primeNumber = 31;
-    for (let i = 0; i < key.mapLength; i++) {
+    for (let i = 0; i < key.length; i++) {
       hashCode = primeNumber * hashCode + key.charCodeAt(i);
     }
 
@@ -67,17 +67,24 @@ class HashMap {
 
   // 7 - clear() removes all entries in the hash map.
   clear() {
-    //
+    this.mapLength = 0;
+    this.buckets = new Array(16).fill(null);
+  }
+
+  // 8 - keys() returns an array containing all the keys inside the hash map.
+  keys() {
+    return this.buckets.filter((key) => key);
   }
 }
 
 const map = new HashMap();
 
-map.set("alfred", "I am the value");
+map.set("janice", "I am janice");
+map.set("alfred", "I am alfred");
 // console.log(map.get("alfred")); // outputs "I am the value"
 // console.log(map.get("janice")); // outputs null
 // console.log(map.has("alfred")); // outputs true
 // console.log(map.has("janice")); // outputs false
-console.log(map.remove("alfred")); // removes "alfred" from hashMap
-console.log(map.remove("janice")); // outputs false
-console.log(map.length());
+// console.log(map.remove("alfred")); // removes "alfred" from hashMap
+// console.log(map.remove("janice")); // outputs false
+// console.log(map.keys());
