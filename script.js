@@ -1,6 +1,6 @@
 // We use linked lists to help with collisions
 class Node {
-  constructor(key = null, value = null, next = null) {
+  constructor(key, value, next) {
     this.key = key;
     this.value = value;
     this.next = next;
@@ -35,17 +35,26 @@ class HashMap {
   // 2 - set(key, value) takes two arguments, the first is a key
   // and the second is a value that is assigned to this key.
   // If a key already exists, then the old value is overwritten
-
-  // REFACTOR THIS
   set(key, value) {
     let index = this.hash(key);
 
-    // merely for testing
-    this.buckets[index] = new Node(key, value, null);
-    this.buckets[index].next = new Node("Oswald", "eita carai", null);
+    if (!this.buckets[index]) {
+      this.buckets[index] = new Node(key, value, null);
+      return;
+    }
 
-    this.buckets[index + 1] = new Node("Janaina", "safada", null);
-    this.buckets[index + 1].next = new Node("Padilha", "ihh", null);
+    if (this.buckets[index]) {
+      let node = this.buckets[index];
+
+      while (node) {
+        if (!node.next) {
+          node.next = new Node(key, value, null);
+          return;
+        }
+
+        node = node.next;
+      }
+    }
   }
 
   // Helper function to traverse the hash map
@@ -86,8 +95,6 @@ class HashMap {
   // 5 - remove(key) takes a key as an argument. If the given key is in the hash map,
   // it should remove the entry with that key and return true.
   // If the key isn’t in the hash map, it should return false.
-
-  // REFACTOR THIS - IT STOPS WORKING WHEN YOU REMOVE ALL NODES
   remove(key) {
     this.traverse((node, nodeIndex) => {
       if (node.key === key) {
@@ -96,7 +103,9 @@ class HashMap {
 
         while (node) {
           if (node.key === key) {
-            if (previous) {
+            if (!previous && !node.next) {
+              this.buckets[nodeIndex] = null;
+            } else if (previous) {
               previous.next = node.next;
             } else {
               this.buckets[nodeIndex] = node.next;
@@ -164,16 +173,36 @@ class HashMap {
   }
 }
 
-const map = new HashMap();
+// Optional, meant to showcase most functions in the HashMap class
+function driver() {
+  const map = new HashMap();
 
-map.set("Sara", "Sara's key");
-console.log(map.buckets);
+  console.log("Building hash map...");
+  console.log("Here's our hash map:");
+  console.log(map.buckets);
+  console.log("Now let's add three keys! Sara, raSa, and Alfred.");
 
-// map.remove("Sara");
-map.remove("Oswald");
+  map.set("Sara", "Sara's key");
+  map.set("raSa", "Sara's Rival key");
+  map.set("Alfred", "Alfred's key");
 
-console.log(map.buckets);
-// console.log(map.length());
-// console.log(map.keys());
-// console.log(map.values());
-// console.log(map.entries());
+  console.log("This is our hash map now:");
+  console.log(map.buckets);
+  console.log("And here's some random stuff about our hash map:");
+
+  console.log("Our hash map length is: " + map.length());
+  console.log("Our hash map holds the following keys: ");
+  console.log(map.keys());
+  console.log("Our hash map holds the following values: ");
+  console.log(map.values());
+  console.log("Our hash map holds the following entries: ");
+  console.log(map.entries());
+
+  console.log("Now let's remove Sara's rival twin from our hash map:");
+  map.remove("raSa");
+
+  console.log("Here's our hash map without her!");
+  console.log(map.buckets);
+}
+
+driver();
