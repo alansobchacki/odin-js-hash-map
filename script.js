@@ -56,9 +56,10 @@ class HashMap {
     for (let i = 0; i < filteredBucket.length; i++) {
       let list = filteredBucket[i];
       let node = list;
+      let nodeIndex = this.hash(node.key);
 
       while (node) {
-        callback(node);
+        callback(node, nodeIndex);
         node = node.next;
       }
     }
@@ -86,15 +87,31 @@ class HashMap {
   // it should remove the entry with that key and return true.
   // If the key isn’t in the hash map, it should return false.
 
-  // REFACTOR THIS
+  // REFACTOR THIS - IT STOPS WORKING WHEN YOU REMOVE ALL NODES
   remove(key) {
-    let value = null;
+    this.traverse((node, nodeIndex) => {
+      if (node.key === key) {
+        let node = this.buckets[nodeIndex];
+        let previous = null;
 
-    this.traverse((node) => {
-      if (node.key === key) value = node.key;
+        while (node) {
+          if (node.key === key) {
+            if (previous) {
+              previous.next = node.next;
+            } else {
+              this.buckets[nodeIndex] = node.next;
+            }
+
+            return true;
+          }
+
+          previous = node;
+          node = node.next;
+        }
+      }
     });
 
-    return value;
+    return false;
   }
 
   // 6 - length() returns the number of stored keys in the hash map.
@@ -152,6 +169,11 @@ const map = new HashMap();
 map.set("Sara", "Sara's key");
 console.log(map.buckets);
 
+// map.remove("Sara");
 map.remove("Oswald");
 
 console.log(map.buckets);
+// console.log(map.length());
+// console.log(map.keys());
+// console.log(map.values());
+// console.log(map.entries());
