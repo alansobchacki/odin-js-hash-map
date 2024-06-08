@@ -1,9 +1,16 @@
+// We use linked lists to help with collisions
+class Node {
+  constructor(key = null, value = null, next = null) {
+    this.key = key;
+    this.value = value;
+    this.next = next;
+  }
+}
+
 // Assignment : Start by creating a HashMap class or factory function. It’s up to you which you want to use.
 // Then proceed to create the following methods:
-
 class HashMap {
   constructor() {
-    this.mapLength = 0;
     this.buckets = new Array(16).fill(null);
   }
 
@@ -16,75 +23,135 @@ class HashMap {
       hashCode = primeNumber * hashCode + key.charCodeAt(i);
     }
 
-    return hashCode % 16;
+    hashCode = hashCode % 16;
+
+    if (hashCode < 0 || hashCode >= this.buckets.length) {
+      throw new Error("Trying to access index out of bound");
+    }
+
+    return hashCode;
   }
 
   // 2 - set(key, value) takes two arguments, the first is a key
   // and the second is a value that is assigned to this key.
   // If a key already exists, then the old value is overwritten
+
+  // REFACTOR THIS
   set(key, value) {
     let index = this.hash(key);
 
-    this.buckets[index] = { key: key, value: value };
-    this.mapLength += 1;
+    // merely for testing
+    this.buckets[index] = new Node(key, value, null);
+    this.buckets[index].next = new Node("Oswald", "eita carai", null);
+
+    this.buckets[index + 1] = new Node("Janaina", "safada", null);
+    this.buckets[index + 1].next = new Node("Padilha", "ihh", null);
+  }
+
+  // Helper function to traverse the hash map
+  // Used to help with the following tasks
+  traverse(callback) {
+    const filteredBucket = this.buckets.filter((bucket) => bucket);
+
+    for (let i = 0; i < filteredBucket.length; i++) {
+      let list = filteredBucket[i];
+      let node = list;
+
+      while (node) {
+        callback(node);
+        node = node.next;
+      }
+    }
   }
 
   // 3 - get(key) takes one argument as a key and returns the value that is assigned to this key.
   // If a key is not found, return null.
   get(key) {
-    const index = this.hash(key);
+    let value = null;
 
-    return this.buckets[index] ? this.buckets[index].value : null;
+    this.traverse((node) => {
+      if (node.key === key) value = node.key;
+    });
+
+    return value;
   }
 
   // 4 - has(key) takes a key as an argument and returns true or false
   // based on whether or not the key is in the hash map.
   has(key) {
-    const index = this.hash(key);
-
-    return this.buckets[index] ? true : false;
+    return this.get(key) !== null;
   }
 
   // 5 - remove(key) takes a key as an argument. If the given key is in the hash map,
   // it should remove the entry with that key and return true.
   // If the key isn’t in the hash map, it should return false.
+
+  // REFACTOR THIS
   remove(key) {
-    const index = this.hash(key);
+    let value = null;
 
-    if (this.buckets[index]) {
-      this.buckets[index] = null;
-      this.mapLength -= 1;
-      return true;
-    }
+    this.traverse((node) => {
+      if (node.key === key) value = node.key;
+    });
 
-    return false;
+    return value;
   }
 
-  // 6 - mapLength() returns the number of stored keys in the hash map.
+  // 6 - length() returns the number of stored keys in the hash map.
   length() {
-    return this.mapLength;
+    let length = 0;
+
+    this.traverse(() => {
+      length += 1;
+    });
+
+    return length;
   }
 
   // 7 - clear() removes all entries in the hash map.
   clear() {
-    this.mapLength = 0;
     this.buckets = new Array(16).fill(null);
   }
 
   // 8 - keys() returns an array containing all the keys inside the hash map.
   keys() {
-    return this.buckets.filter((key) => key);
+    let keys = [];
+
+    this.traverse((node) => {
+      keys.push(node.key);
+    });
+
+    return keys;
+  }
+
+  // 9 - values() returns an array containing all the values.
+  values() {
+    let values = [];
+
+    this.traverse((node) => {
+      values.push(node.value);
+    });
+
+    return values;
+  }
+
+  // 10 - entries() returns an array that contains each key, value pair.
+  entries() {
+    let entries = [];
+
+    this.traverse((node) => {
+      entries.push([node.key, node.value]);
+    });
+
+    return entries;
   }
 }
 
 const map = new HashMap();
 
-map.set("janice", "I am janice");
-map.set("alfred", "I am alfred");
-// console.log(map.get("alfred")); // outputs "I am the value"
-// console.log(map.get("janice")); // outputs null
-// console.log(map.has("alfred")); // outputs true
-// console.log(map.has("janice")); // outputs false
-// console.log(map.remove("alfred")); // removes "alfred" from hashMap
-// console.log(map.remove("janice")); // outputs false
-// console.log(map.keys());
+map.set("Sara", "Sara's key");
+console.log(map.buckets);
+
+map.remove("Oswald");
+
+console.log(map.buckets);
