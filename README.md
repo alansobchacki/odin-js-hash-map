@@ -33,5 +33,7 @@ It may be silly, but I finally learned the difference between Concise Body Arrow
 Notes
 -----
 
+To handle collisions, our hash map keys are inserted as linked lists instead of arrays. 
+
 I added a driver() function to showcase some HashMap functions. It wasn't a requirement, but it felt like a waste not to do so.
 
